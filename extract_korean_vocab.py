@@ -28,32 +28,35 @@ kkma = Kkma()
 
 vocab_list = []
 
-with open(in_filename, "r", encoding="utf-8") as korean_text_file_object:
-    with open(out_filename, "w", encoding="utf-8") as outfile:
-        story = korean_text_file_object.read()
-        print("Splitting sentences...")
-        sentences = kkma.sentences(story)
-        print(f"Parsing words in {len(sentences)} sentences...")
-        for sentence in sentences:
-            tags = okt.pos(sentence, norm=True, stem=True)
-            for t in tags:
-                if t[1] not in ['Foreign',
-                                'Punctuation',
-                                'Number',
-                                'Josa',
-                                'Eomi',
-                                'Suffix']:
-                    if t[0] not in vocab_list:
-                        vocab_list.append(t[0])
-                        print(t[0])
-                        proposed_entry = (t[0],
-                                          translate(t[0])['translatedText'],
-                                          t[1],
-                                          sentence)
-                        for f_idx, field in enumerate(proposed_entry):
-                            outfile.write(str(field))
-                            if f_idx < len(proposed_entry) - 1:
-                                outfile.write('|')
-                            else:
-                                outfile.write('\n')
-print("Done!")
+def extract_korean_vocab(in_filename, out_filename):
+    with open(in_filename, "r", encoding="utf-8") as korean_text_file_object:
+        with open(out_filename, "w", encoding="utf-8") as outfile:
+            story = korean_text_file_object.read()
+            print("Splitting sentences...")
+            sentences = kkma.sentences(story)
+            print(f"Parsing words in {len(sentences)} sentences...")
+            for sentence in sentences:
+                tags = okt.pos(sentence, norm=True, stem=True)
+                for t in tags:
+                    if t[1] not in ['Foreign',
+                                    'Punctuation',
+                                    'Number',
+                                    'Josa',
+                                    'Eomi',
+                                    'Suffix']:
+                        if t[0] not in vocab_list:
+                            vocab_list.append(t[0])
+                            print(t[0])
+                            proposed_entry = (t[0],
+                                              translate(t[0])['translatedText'],
+                                              t[1],
+                                              sentence)
+                            for f_idx, field in enumerate(proposed_entry):
+                                outfile.write(str(field))
+                                if f_idx < len(proposed_entry) - 1:
+                                    outfile.write('|')
+                                else:
+                                    outfile.write('\n')
+    print("Done!")
+
+extract_korean_vocab(in_filename, out_filename)
